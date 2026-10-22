@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Details — STRTKIN.in</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .product-detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: start;
+    }
+    
+    .product-main-image {
+      width: 100%;
+      background: #121212;
+      border: 1px solid #222222;
+      border-radius: 8px;
+      overflow: hidden;
+      min-height: 450px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .product-main-image img {
+      width: 100%;
+      height: auto;
+      max-height: 750px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .product-title {
+      font-family: var(--font-script);
+      font-style: italic;
+      font-size: 38px;
+      font-weight: 900;
+      margin-bottom: 12px;
+    }
+
+    .product-price {
+      font-family: var(--font-mono);
+      font-size: 22px;
+      color: var(--accent-gold);
+      font-weight: 700;
+      margin-bottom: 24px;
+    }
+
+    .product-description {
+      color: var(--text-muted);
+      font-size: 15px;
+      line-height: 1.7;
+      margin-bottom: 32px;
+    }
+
+    .section-label {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--text-color);
+      font-weight: 700;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .btn-add-cart {
+      background: #ffffff !important;
+      color: #000000 !important;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      padding: 18px;
+      width: 100%;
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background 0.3s ease;
+    }
+
+    .btn-add-cart:hover {
+      background: var(--accent-gold) !important;
+    }
+
+    @media (max-width: 900px) {
+      .product-detail-grid { grid-template-columns: 1fr; gap: 32px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="marquee-bar">
+      <div class="marquee-content">
+        <span>FREE EXPRESS SHIPPING ACROSS INDIA ON ORDERS ABOVE ₹1,999</span>
+        <span>—</span>
+        <span>DROPS ARE LIMITED TO 100 PIECES WORLDWIDE</span>
+        <span>—</span>
+        <span>NEW COLLECTION AVAILABLE NOW</span>
+        <span>—</span>
+        <span>FREE EXPRESS SHIPPING ACROSS INDIA ON ORDERS ABOVE ₹1,999</span>
+        <span>—</span>
+        <span>DROPS ARE LIMITED TO 100 PIECES WORLDWIDE</span>
+        <span>—</span>
+        <span>NEW COLLECTION AVAILABLE NOW</span>
+      </div>
+    </div>
+    <div class="navbar">
+      <a href="index.html" class="logo">STRTKIN</a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="shop.html">Shop All</a></li>
+      </ul>
+      <div class="nav-icons">
+        <a href="cart.html" class="cart-icon-wrapper">
+          <i class="fa-solid fa-bag-shopping"></i>
+          <span id="cart-count">0</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <div class="section">
+    <div class="product-detail-grid" id="product-detail-container">
+      <p style="color: var(--text-muted);">Loading product details...</p>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-container">
+      <div class="footer-col">
+        <div class="logo" style="margin-bottom: 16px;">STRTKIN</div>
+        <p style="color: var(--text-muted); font-size: 14px;">Modern luxury streetwear designed and produced in India.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Navigation</h4>
+        <ul>
+          <li><a href="shop.html">Shop All Drops</a></li>
+          <li><a href="about.html">About the Brand</a></li>
+          <li><a href="contact.html">Contact Us</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Policies</h4>
+        <ul>
+          <li><a href="privacy.html">Privacy Policy</a></li>
+          <li><a href="terms.html">Terms of Service</a></li>
+          <li><a href="return-policy.html">Exchange Policy</a></li>
+          <li><a href="shipping-policy.html">Shipping Info</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">&copy; 2026 STRTKIN.in. All Rights Reserved.</div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    let currentProduct = null;
+    let selectedSize = '';
+
+    async function loadProductDetails() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const productId = urlParams.get('id');
+
+      if (!productId) {
+        document.getElementById('product-detail-container').innerHTML = '<p>Product not found.</p>';
+        return;
+      }
+
+      const { data: product, error } = await db.from('products').select('*').eq('id', productId).single();
+
+      if (error || !product) {
+        document.getElementById('product-detail-container').innerHTML = '<p>Error loading product details.</p>';
+        return;
+      }
+
+      currentProduct = product;
+
+      // Resolves the image from the product object's images array correctly
+      const displayImageUrl = getPublicImageUrl(product);
+
+      // Parse available sizes
+      let rawSizes = product.sizes ? product.sizes : ['M', 'L', 'XL'];
+      if (typeof rawSizes === 'string') {
+        rawSizes = rawSizes.split(',').map(s => s.trim());
+      }
+
+      selectedSize = rawSizes[0] || 'M';
+
+      const sizesHtml = rawSizes.map((size, index) => `
+        <button class="size-btn ${index === 0 ? 'active' : ''}" onclick="selectSize(this, '${size}')">${size}</button>
+      `).join('');
+
+      document.getElementById('product-detail-container').innerHTML = `
+        <div class="product-main-image">
+          <img id="main-product-img" src="${displayImageUrl}" alt="${product.name}">
+        </div>
+        <div>
+          <h1 class="product-title">${product.name}</h1>
+          <div class="product-price">₹${Number(product.price).toLocaleString('en-IN')}</div>
+          <p class="product-description">${product.description || 'Premium oversized streetwear t-shirt crafted with high-grade cotton.'}</p>
+          
+          <span class="section-label">SELECT SIZE</span>
+          <div class="size-selector">
+            ${sizesHtml}
+          </div>
+
+          <button class="btn-add-cart" onclick="handleAddCart()">Add To Cart</button>
+        </div>
+      `;
+    }
+
+    window.selectSize = function(btn, size) {
+      document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedSize = size;
+    };
+
+    window.handleAddCart = function() {
+      if (!currentProduct) return;
+      addToCart({
+        id: currentProduct.id,
+        name: currentProduct.name,
+        price: currentProduct.price,
+        image: getPublicImageUrl(currentProduct),
+        size: selectedSize
+      });
+      alert(`Added ${currentProduct.name} (${selectedSize}) to your cart!`);
+    };
+
+    loadProductDetails();
+  </script>
+</body>
+</html>

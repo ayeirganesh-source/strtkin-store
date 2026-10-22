@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Confirmed — STRTKIN.in</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <header>
+    <div class="announcement-bar">Free shipping across India on orders above ₹1,999</div>
+    <div class="navbar">
+      <a href="index.html" class="logo">STRTKIN.IN</a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="shop.html">Shop</a></li>
+      </ul>
+      <div class="nav-icons">
+        <a href="cart.html" class="cart-icon-wrapper">
+          <i class="fa-solid fa-bag-shopping"></i>
+          <span id="cart-count">0</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <section class="section" style="text-align: center; max-width: 700px;">
+    <i class="fa-solid fa-circle-check" style="font-size: 50px; color: #2e7d32; margin-bottom: 20px;"></i>
+    <h2 class="section-title">Order Confirmed!</h2>
+    <p style="color: var(--gray-medium); margin-bottom: 30px;">Thank you for shopping with STRTKIN. Your order has been successfully saved.</p>
+    
+    <div id="order-details-card" style="background: var(--gray-light); padding: 30px; text-align: left; margin-bottom: 30px;">
+      <p>Loading receipt...</p>
+    </div>
+
+    <a href="shop.html" class="btn">Continue Shopping</a>
+  </section>
+
+  <footer>
+    <div class="footer-bottom">&copy; 2026 STRTKIN.in. All Rights Reserved.</div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    const orderData = JSON.parse(sessionStorage.getItem('last_order'));
+    const detailsCard = document.getElementById('order-details-card');
+
+    if (!orderData) {
+      detailsCard.innerHTML = `<p>No recent order found.</p>`;
+    } else {
+      detailsCard.innerHTML = `
+        <h4 style="font-size:14px; font-weight:700; text-transform:uppercase; margin-bottom:12px;">Order ID: ${orderData.orderId}</h4>
+        <p style="font-size:13px; color:var(--gray-medium); margin-bottom:6px;"><strong>Deliver to:</strong> ${orderData.name}, ${orderData.phone}</p>
+        <p style="font-size:13px; color:var(--gray-medium); margin-bottom:6px;"><strong>Address:</strong> ${orderData.address}, ${orderData.city} - ${orderData.pincode}</p>
+        <p style="font-size:13px; color:var(--gray-medium); margin-bottom:16px;"><strong>Total Amount:</strong> ${orderData.total}</p>
+        <h5 style="font-size:13px; font-weight:700; text-transform:uppercase; margin-bottom:8px;">Items Ordered:</h5>
+        <ul>
+          ${orderData.items.map(i => `<li style="font-size:13px; color:var(--gray-medium);">${i.name} (${i.size}) x${i.quantity}</li>`).join('')}
+        </ul>
+      `;
+    }
+  </script>
+</body>
+</html>

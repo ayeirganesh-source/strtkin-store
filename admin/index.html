@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>STRTKIN — Control Panel</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      background-color: #0d131f;
+      color: #e2e8f0;
+      font-family: 'Space Grotesk', sans-serif;
+      min-height: 100vh;
+    }
+    
+    .admin-header {
+      background: #090d16;
+      border-bottom: 1px solid #1e293b;
+      padding: 20px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .admin-brand {
+      font-size: 18px;
+      font-weight: 800;
+      color: #38bdf8;
+      letter-spacing: 1px;
+    }
+
+    .btn-logout {
+      background: transparent;
+      border: 1px solid #334155;
+      color: #94a3b8;
+      padding: 8px 18px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    .btn-logout:hover { background: #1e293b; color: #fff; }
+
+    .admin-container {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 0 24px;
+    }
+
+    .admin-nav {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 30px;
+    }
+
+    .tab-btn {
+      background: #1e293b;
+      color: #94a3b8;
+      border: 1px solid #334155;
+      padding: 12px 24px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .tab-btn.active {
+      background: #38bdf8;
+      color: #090d16;
+      border-color: #38bdf8;
+    }
+
+    .admin-card {
+      background: #141d2e;
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      padding: 32px;
+      margin-bottom: 40px;
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: #38bdf8;
+      letter-spacing: 1px;
+      margin-bottom: 24px;
+      text-transform: uppercase;
+    }
+
+    input, textarea, select {
+      background: #090d16 !important;
+      border: 1px solid #1e293b !important;
+      color: #f8fafc !important;
+      border-radius: 6px;
+      padding: 14px;
+      font-family: sans-serif;
+      font-size: 14px;
+      width: 100%;
+      margin-bottom: 16px;
+      box-sizing: border-box;
+    }
+    input::placeholder, textarea::placeholder { color: #475569; }
+
+    .btn-submit {
+      background: #38bdf8;
+      color: #090d16;
+      border: none;
+      width: 100%;
+      padding: 16px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      border-radius: 6px;
+      margin-top: 10px;
+    }
+    .btn-submit:hover { background: #7dd3fc; }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 13px;
+    }
+
+    th {
+      background: #090d16;
+      padding: 14px 16px;
+      color: #64748b;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      border-bottom: 1px solid #1e293b;
+    }
+
+    td {
+      padding: 16px;
+      border-bottom: 1px solid #1e293b;
+      color: #cbd5e1;
+    }
+
+    .btn-delete {
+      color: #f87171;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .btn-delete:hover { color: #ef4444; }
+
+    .btn-details {
+      background: #1e293b;
+      color: #38bdf8;
+      border: 1px solid #334155;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 11px;
+      text-transform: uppercase;
+    }
+    .btn-details:hover { background: #38bdf8; color: #090d16; }
+
+    .status-select {
+      margin: 0;
+      padding: 6px 12px;
+      font-size: 12px;
+      width: auto;
+      background: #090d16 !important;
+      color: #38bdf8 !important;
+      border-color: #334155 !important;
+    }
+
+    /* Modal / Popup for Customer Details */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(9, 13, 22, 0.85);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+    }
+    .modal-content {
+      background: #141d2e;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 600px;
+      padding: 32px;
+      position: relative;
+    }
+    .modal-close {
+      position: absolute;
+      top: 20px; right: 20px;
+      background: none; border: none;
+      color: #94a3b8; font-size: 20px; cursor: pointer;
+    }
+    .modal-close:hover { color: #fff; }
+
+    /* Auth Box */
+    #auth-box {
+      max-width: 400px;
+      margin: 100px auto;
+      background: #141d2e;
+      border: 1px solid #1e293b;
+      padding: 40px;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Login Form -->
+  <div id="auth-box">
+    <h2 style="font-size: 18px; color: #38bdf8; margin-bottom: 24px; font-weight: 800;">&gt;_ STRTKIN // ADMIN_LOGIN</h2>
+    <form id="login-form">
+      <input type="email" id="admin-email" placeholder="Admin Email" required>
+      <input type="password" id="admin-password" placeholder="Password" required>
+      <button type="submit" class="btn-submit">AUTHENTICATE</button>
+    </form>
+  </div>
+
+  <!-- Admin Dashboard -->
+  <div id="dashboard-box" style="display: none;">
+    <div class="admin-header">
+      <div class="admin-brand">&gt;_ STRTKIN // CONTROL_PANEL</div>
+      <button class="btn-logout" id="logout-btn">LOGOUT</button>
+    </div>
+
+    <div class="admin-container">
+      <!-- Navigation Tabs -->
+      <div class="admin-nav">
+        <button class="tab-btn active" onclick="switchTab('products')">[1] Add Product</button>
+        <button class="tab-btn" onclick="switchTab('inventory')">[2] Inventory List</button>
+        <button class="tab-btn" onclick="switchTab('orders')">[3] Recent Orders</button>
+      </div>
+
+      <!-- TAB 1: Add Product Form -->
+      <div id="tab-products" class="admin-card">
+        <div class="card-title">// CREATE NEW PRODUCT DROP</div>
+        <form id="product-form">
+          <input type="text" id="prod-name" placeholder="Item Specifications / Product Name" required>
+          <textarea id="prod-desc" placeholder="Product Description & Fabric Highlights" rows="3"></textarea>
+          
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <input type="number" id="prod-price" placeholder="Price (INR)" required>
+            <input type="number" id="prod-stock" placeholder="Stock Level" required>
+          </div>
+
+          <select id="prod-category">
+            <!-- Populated dynamically from categories table -->
+          </select>
+
+          <input type="text" id="prod-sizes" placeholder="Available Sizes (e.g. S,M,L,XL)" value="S,M,L,XL">
+
+          <label style="font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 8px;">PRODUCT ASSET (SELECT MULTIPLE IMAGES)</label>
+          <input type="file" id="prod-images" accept="image/*" multiple required style="padding: 10px;">
+
+          <button type="submit" class="btn-submit">EXECUTE &amp; SAVE TO DATABASE</button>
+        </form>
+      </div>
+
+      <!-- TAB 2: Inventory List -->
+      <div id="tab-inventory" class="admin-card" style="display: none;">
+        <div class="card-title">// INVENTORY LIST</div>
+        <table>
+          <thead>
+            <tr>
+              <th>Item Name</th>
+              <th>Price</th>
+              <th>Stock</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="inventory-list">
+            <tr><td colspan="4" style="color:#64748b;">Loading inventory...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- TAB 3: Recent Orders with Customer Details & Delete -->
+      <div id="tab-orders" class="admin-card" style="display: none;">
+        <div class="card-title">// RECENT ORDERS & CUSTOMER DETAILS</div>
+        <table>
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Customer</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th>Details</th>
+              <th>Update</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="orders-list">
+            <tr><td colspan="7" style="color:#64748b;">Loading orders...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Customer Details Modal Popup -->
+  <div id="order-modal" class="modal-overlay">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeOrderModal()">&times;</button>
+      <div class="card-title" style="margin-bottom: 16px;">// ORDER & CUSTOMER DOSSIER</div>
+      <div id="modal-body" style="font-size: 14px; line-height: 1.6;">
+        <!-- Injected order info -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase.js"></script>
+  <script>
+    // Tab Switching Logic
+    window.switchTab = function(tabName) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.getElementById('tab-products').style.display = 'none';
+      document.getElementById('tab-inventory').style.display = 'none';
+      document.getElementById('tab-orders').style.display = 'none';
+
+      if (tabName === 'products') {
+        document.querySelectorAll('.tab-btn')[0].classList.add('active');
+        document.getElementById('tab-products').style.display = 'block';
+        loadCategories();
+      } else if (tabName === 'inventory') {
+        document.querySelectorAll('.tab-btn')[1].classList.add('active');
+        document.getElementById('tab-inventory').style.display = 'block';
+        loadInventory();
+      } else if (tabName === 'orders') {
+        document.querySelectorAll('.tab-btn')[2].classList.add('active');
+        document.getElementById('tab-orders').style.display = 'block';
+        loadOrders();
+      }
+    };
+
+    // Load Categories into Select Dropdown
+    async function loadCategories() {
+      const selectEl = document.getElementById('prod-category');
+      const { data: cats, error } = await db.from('categories').select('*');
+      if (error || !cats || cats.length === 0) {
+        selectEl.innerHTML = '<option value="">No categories found</option>';
+        return;
+      }
+      selectEl.innerHTML = cats.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+    }
+
+    // Auth Handlers
+    async function checkAuth() {
+      const { data: { session } } = await db.auth.getSession();
+      if (session) {
+        document.getElementById('auth-box').style.display = 'none';
+        document.getElementById('dashboard-box').style.display = 'block';
+        loadCategories();
+        loadInventory();
+      } else {
+        document.getElementById('auth-box').style.display = 'block';
+        document.getElementById('dashboard-box').style.display = 'none';
+      }
+    }
+
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('admin-email').value;
+      const password = document.getElementById('admin-password').value;
+
+      const { error } = await db.auth.signInWithPassword({ email, password });
+      if (error) alert('Auth Error: ' + error.message);
+      else checkAuth();
+    });
+
+    document.getElementById('logout-btn').addEventListener('click', async () => {
+      await db.auth.signOut();
+      checkAuth();
+    });
+
+    // Multi-Image Product Creation
+    document.getElementById('product-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const name = document.getElementById('prod-name').value;
+      const desc = document.getElementById('prod-desc').value;
+      const price = parseFloat(document.getElementById('prod-price').value);
+      const stock = parseInt(document.getElementById('prod-stock').value);
+      const categoryId = document.getElementById('prod-category').value;
+      const sizes = document.getElementById('prod-sizes').value;
+      const fileInput = document.getElementById('prod-images');
+
+      if (!fileInput.files || fileInput.files.length === 0) {
+        alert('Please choose at least one image file.');
+        return;
+      }
+
+      let uploadedImageUrls = [];
+
+      for (let file of fileInput.files) {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Date.now()}-${Math.floor(Math.random() * 10000)}.${fileExt}`;
+
+        const { data: uploadData, error: uploadError } = await db.storage
+          .from('product-images')
+          .upload(fileName, file);
+
+        if (uploadError) {
+          alert(`Image upload failed: ${uploadError.message}`);
+          return;
+        }
+
+        const { data: publicUrlData } = db.storage
+          .from('product-images')
+          .getPublicUrl(fileName);
+
+        uploadedImageUrls.push(publicUrlData.publicUrl);
+      }
+
+const { error: dbError } = await db.from('products').insert([
+        {
+          name,
+          description: desc,
+          price,
+          stock,
+          category_id: categoryId,
+          sizes: sizes.split(',').map(s => s.trim()), // <-- Converts "S,M,L,XL" into ["S", "M", "L", "XL"]
+          images: uploadedImageUrls
+        }
+      ]);
+      if (dbError) {
+        alert('Database insert error: ' + dbError.message);
+      } else {
+        alert('Product created successfully with ' + uploadedImageUrls.length + ' image(s)!');
+        document.getElementById('product-form').reset();
+        switchTab('inventory');
+      }
+    });
+
+    // Load & Delete Inventory
+    async function loadInventory() {
+      const container = document.getElementById('inventory-list');
+      const { data: products, error } = await db.from('products').select('*').order('created_at', { ascending: false });
+
+      if (error || !products || products.length === 0) {
+        container.innerHTML = '<tr><td colspan="4" style="color:#64748b;">No items in inventory.</td></tr>';
+        return;
+      }
+
+      container.innerHTML = products.map(p => `
+        <tr>
+          <td style="font-weight:700; color:#fff;">${p.name}</td>
+          <td style="color:#38bdf8;">₹${p.price}</td>
+          <td>${p.stock}</td>
+          <td>
+            <button class="btn-delete" onclick="deleteProduct('${p.id}')">
+              <i class="fa-solid fa-trash"></i> DELETE
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    window.deleteProduct = async function(id) {
+      if (!confirm('Are you sure you want to delete this product?')) return;
+      const { error } = await db.from('products').delete().eq('id', id);
+      if (error) alert('Error: ' + error.message);
+      else loadInventory();
+    };
+
+    // Load Orders with Customer Details Button
+    async function loadOrders() {
+      const container = document.getElementById('orders-list');
+      const { data: orders, error } = await db.from('orders').select('*').order('created_at', { ascending: false });
+
+      if (error || !orders || orders.length === 0) {
+        container.innerHTML = '<tr><td colspan="7" style="color:#64748b;">No recent orders.</td></tr>';
+        return;
+      }
+
+      window.allOrders = orders;
+
+      container.innerHTML = orders.map((o, index) => `
+        <tr>
+          <td style="font-family: monospace; font-weight:700; color:#fff;">${o.order_id}</td>
+          <td>${o.customer_name}<br><span style="font-size:11px; color:#38bdf8; font-family:monospace;">${o.phone}</span></td>
+          <td style="color:#38bdf8;">₹${o.total_amount}</td>
+          <td style="font-weight:700;">${o.status}</td>
+          <td>
+            <button class="btn-details" onclick="viewOrderDetails(${index})">
+              <i class="fa-solid fa-eye"></i> View Info
+            </button>
+          </td>
+          <td>
+            <select class="status-select" onchange="updateOrderStatus('${o.id}', this.value)">
+              <option value="Pending" ${o.status === 'Pending' ? 'selected' : ''}>Pending</option>
+              <option value="Confirmed" ${o.status === 'Confirmed' ? 'selected' : ''}>Confirmed</option>
+              <option value="Shipped" ${o.status === 'Shipped' ? 'selected' : ''}>Shipped</option>
+              <option value="Delivered" ${o.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
+            </select>
+          </td>
+          <td>
+            <button class="btn-delete" onclick="deleteOrder('${o.id}')">
+              <i class="fa-solid fa-trash"></i> DELETE
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // View Detailed Customer Information Modal
+    window.viewOrderDetails = async function(index) {
+      const order = window.allOrders[index];
+      const modal = document.getElementById('order-modal');
+      const modalBody = document.getElementById('modal-body');
+
+      modalBody.innerHTML = `<p style="color:#64748b;">Fetching items...</p>`;
+      modal.style.display = 'flex';
+
+      const { data: items } = await db.from('order_items').select('*').eq('order_id', order.id);
+
+      let itemsHtml = items && items.length > 0 ? items.map(i => `
+        <div style="background:#090d16; padding: 10px 14px; border-radius: 4px; margin-top: 6px; display: flex; justify-content: space-between; font-size: 13px;">
+          <span>${i.product_name} <strong style="color:#38bdf8;">(${i.size})</strong> x ${i.quantity}</span>
+          <span style="font-family: monospace;">₹${i.price * i.quantity}</span>
+        </div>
+      `).join('') : '<p style="color:#64748b;">No items recorded.</p>';
+
+      modalBody.innerHTML = `
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+          <div>
+            <span style="font-size:11px; color:#64748b; text-transform:uppercase;">Order ID</span>
+            <div style="font-family:monospace; font-weight:700; color:#fff;">${order.order_id}</div>
+          </div>
+          <div>
+            <span style="font-size:11px; color:#64748b; text-transform:uppercase;">Order Status</span>
+            <div style="font-weight:700; color:#38bdf8;">${order.status}</div>
+          </div>
+          <div>
+            <span style="font-size:11px; color:#64748b; text-transform:uppercase;">Customer Name</span>
+            <div style="font-weight:700; color:#fff;">${order.customer_name}</div>
+          </div>
+          <div>
+            <span style="font-size:11px; color:#64748b; text-transform:uppercase;">Phone Number</span>
+            <div style="font-family:monospace; color:#38bdf8; font-weight:700;">${order.phone}</div>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+          <span style="font-size:11px; color:#64748b; text-transform:uppercase;">Delivery Address</span>
+          <div style="color:#cbd5e1; background: #090d16; padding: 12px; border-radius: 6px; margin-top: 4px;">
+            ${order.address}, ${order.city} - ${order.pincode}
+          </div>
+        </div>
+
+        <div>
+          <span style="font-size:11px; color:#64748b; text-transform:uppercase;">Ordered Items</span>
+          <div style="margin-top: 4px;">
+            ${itemsHtml}
+          </div>
+        </div>
+
+        <div style="margin-top: 20px; text-align: right; font-size: 16px; font-weight: 800; color: #38bdf8;">
+          Total Amount: ₹${order.total_amount}
+        </div>
+      `;
+    };
+
+    window.closeOrderModal = function() {
+      document.getElementById('order-modal').style.display = 'none';
+    };
+
+    window.updateOrderStatus = async function(id, newStatus) {
+      const { error } = await db.from('orders').update({ status: newStatus }).eq('id', id);
+      if (error) alert('Error updating status: ' + error.message);
+      else loadOrders();
+    };
+
+    window.deleteOrder = async function(id) {
+      if (!confirm('Are you sure you want to delete this order from history?')) return;
+      await db.from('order_items').delete().eq('order_id', id);
+      const { error } = await db.from('orders').delete().eq('id', id);
+      if (error) alert('Error deleting order: ' + error.message);
+      else loadOrders();
+    };
+
+    checkAuth();
+  </script>
+</body>
+</html>

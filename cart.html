@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shopping Bag & Checkout — STRTKIN.in</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      background-color: #080808 !important;
+      color: #ffffff !important;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    a { text-decoration: none; color: inherit; }
+
+    header {
+      border-bottom: 1px solid #222222;
+      background: #080808;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    .announcement-bar {
+      background: #ffffff;
+      color: #000000;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 8px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    .navbar {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 22px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      font-size: 30px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      color: #ffffff;
+    }
+    .nav-links {
+      display: flex;
+      gap: 30px;
+      list-style: none;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #888888;
+    }
+    .nav-links a:hover { color: #ffffff; }
+
+    .section {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 60px 32px;
+    }
+    .section-title {
+      font-size: 38px;
+      font-weight: 900;
+      margin-bottom: 30px;
+    }
+
+    .cart-checkout-layout {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 50px;
+    }
+
+    .cart-item {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #222222;
+      align-items: center;
+    }
+    .cart-item img {
+      width: 80px;
+      height: 95px;
+      object-fit: cover;
+      background: #181818;
+      border-radius: 6px;
+    }
+    .cart-item-info h4 {
+      font-size: 16px;
+      margin-bottom: 4px;
+      color: #ffffff;
+    }
+    .cart-item-info p {
+      font-size: 13px;
+      color: #aaaaaa;
+      margin-bottom: 8px;
+    }
+
+    .qty-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .qty-btn {
+      background: #333333 !important;
+      color: #ffffff !important;
+      border: 1px solid #777777 !important;
+      width: 32px;
+      height: 32px;
+      cursor: pointer;
+      font-weight: 900;
+      font-size: 16px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .qty-btn:hover {
+      background: #ffffff !important;
+      color: #000000 !important;
+    }
+    .qty-count {
+      font-weight: 700;
+      font-size: 15px;
+      color: #ffffff;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 16px;
+      border: 1px solid #444444 !important;
+      background: #141414 !important;
+      color: #ffffff !important;
+      font-size: 14px;
+      border-radius: 6px;
+      outline: none;
+      margin-bottom: 16px;
+      box-sizing: border-box;
+    }
+    input::placeholder, textarea::placeholder {
+      color: #888888 !important;
+    }
+
+    .order-summary-box {
+      background: #121212 !important;
+      border: 1px solid #333333 !important;
+      padding: 30px;
+      border-radius: 8px;
+    }
+    .order-summary-box h3 {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #ffffff;
+    }
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      font-size: 14px;
+      color: #aaaaaa;
+    }
+    .summary-row.total {
+      font-weight: 800;
+      font-size: 18px;
+      color: #ffffff;
+      border-top: 1px solid #333333;
+      padding-top: 15px;
+      margin-top: 15px;
+    }
+
+    .btn-pay-online {
+      background: #ffffff !important;
+      color: #000000 !important;
+      font-weight: 900 !important;
+      border: 2px solid #ffffff !important;
+      width: 100%;
+      padding: 16px;
+      cursor: pointer;
+      border-radius: 4px;
+      text-transform: uppercase;
+      font-size: 12px;
+      letter-spacing: 2px;
+      margin-top: 24px;
+    }
+    .btn-pay-online:hover {
+      background: #e5c158 !important;
+      border-color: #e5c158 !important;
+    }
+
+    .btn-cod {
+      background: #222222 !important;
+      color: #ffffff !important;
+      border: 2px solid #ffffff !important;
+      width: 100%;
+      padding: 16px;
+      cursor: pointer;
+      border-radius: 4px;
+      text-transform: uppercase;
+      font-size: 12px;
+      letter-spacing: 2px;
+      margin-top: 12px;
+      font-weight: 800;
+    }
+    .btn-cod:hover {
+      background: #ffffff !important;
+      color: #000000 !important;
+    }
+
+    @media (max-width: 768px) {
+      .cart-checkout-layout { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="announcement-bar">Free shipping across India on orders above ₹1,999</div>
+    <div class="navbar">
+      <a href="index.html" class="logo">STRTKIN</a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="shop.html">Shop All</a></li>
+      </ul>
+      <div>
+        <a href="cart.html" style="color:#fff; font-size:18px;"><i class="fa-solid fa-bag-shopping"></i></a>
+      </div>
+    </div>
+  </header>
+
+  <div class="section">
+    <h1 class="section-title">Shopping Bag & Checkout</h1>
+
+    <div class="cart-checkout-layout">
+      <!-- Left: Cart Items & Form -->
+      <div>
+        <div id="cart-items-container"></div>
+
+        <div style="margin-top: 40px;">
+          <h3 style="font-size: 20px; margin-bottom: 20px;">Shipping Details</h3>
+          <form id="checkout-form">
+            <input type="text" id="cust-name" placeholder="Full Name" required>
+            <input type="tel" id="cust-phone" placeholder="Phone Number (10 digits)" required>
+            <textarea id="cust-address" placeholder="Complete Street Address & Landmark" rows="3" required></textarea>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+              <input type="text" id="cust-city" placeholder="City" required>
+              <input type="text" id="cust-pincode" placeholder="Pincode (6 digits)" required>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Right: Order Summary -->
+      <div>
+        <div class="order-summary-box">
+          <h3>Order Summary</h3>
+          <div id="summary-items-list"></div>
+          <div class="summary-row">
+            <span>Subtotal</span>
+            <span id="subtotal-amount">₹0</span>
+          </div>
+          <div class="summary-row">
+            <span>Shipping</span>
+            <span id="shipping-amount">₹0</span>
+          </div>
+          <div class="summary-row total">
+            <span>Total Amount</span>
+            <span id="total-amount" style="color: #e5c158;">₹0</span>
+          </div>
+
+          <button type="button" class="btn-pay-online" id="pay-razorpay-btn">Pay Online (UPI, Card, Netbanking)</button>
+          <button type="button" class="btn-cod" id="place-cod-btn">Place Cash on Delivery Order</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    // Replace with your active Razorpay Key ID (rzp_test_... or rzp_live_...)
+    const RAZORPAY_KEY_ID = "YOUR_RAZORPAY_TEST_KEY_ID";
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const cartContainer = document.getElementById('cart-items-container');
+      const summaryItemsList = document.getElementById('summary-items-list');
+      const subtotalEl = document.getElementById('subtotal-amount');
+      const shippingEl = document.getElementById('shipping-amount');
+      const totalEl = document.getElementById('total-amount');
+
+      function resolveCartImage(item) {
+        if (!item) return '';
+        
+        if (typeof getPublicImageUrl === 'function') {
+          try {
+            const resolved = getPublicImageUrl(item);
+            if (resolved && !resolved.includes('undefined') && !resolved.includes('No Image')) {
+              return resolved;
+            }
+          } catch(e) {}
+        }
+
+        let rawImg = item.image || item.images;
+        if (Array.isArray(rawImg)) rawImg = rawImg[0];
+        
+        if (!rawImg || typeof rawImg !== 'string' || rawImg.includes('No Image') || rawImg.includes('<')) {
+          return '';
+        }
+
+        if (rawImg.startsWith('http') || rawImg.startsWith('data:')) {
+          return rawImg;
+        }
+
+        if (typeof SUPABASE_URL !== 'undefined' && SUPABASE_URL) {
+          return `${SUPABASE_URL}/storage/v1/object/public/product-images/${rawImg}`;
+        }
+
+        return rawImg;
+      }
+
+      function renderCartPage() {
+        let cart = typeof getCart === 'function' ? getCart() : [];
+
+        if (cart.length === 0) {
+          cartContainer.innerHTML = `<p style="color: #888;">Your shopping bag is empty. <a href="shop.html" style="text-decoration: underline; color:#fff;">Start shopping</a></p>`;
+          summaryItemsList.innerHTML = '';
+          subtotalEl.textContent = '₹0';
+          shippingEl.textContent = '₹0';
+          totalEl.textContent = '₹0';
+          return;
+        }
+
+        cartContainer.innerHTML = cart.map((item, index) => {
+          const imageUrl = resolveCartImage(item);
+          const imgTag = imageUrl 
+            ? `<img src="${imageUrl}" alt="${item.name}">` 
+            : `<div style="width:80px;height:95px;background:#181818;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#666;font-size:10px;text-align:center;padding:4px;">No Image</div>`;
+
+          return `
+            <div class="cart-item">
+              ${imgTag}
+              <div class="cart-item-info" style="flex: 1;">
+                <h4>${item.name}</h4>
+                <p>Size: ${item.size} | ₹${Number(item.price).toLocaleString('en-IN')}</p>
+                <div class="qty-controls">
+                  <button class="qty-btn" onclick="updateQty(${index}, -1)">-</button>
+                  <span class="qty-count">${item.quantity}</span>
+                  <button class="qty-btn" onclick="updateQty(${index}, 1)">+</button>
+                </div>
+              </div>
+              <button style="background:none; border:none; color: #ff5555; cursor:pointer; font-size:18px;" onclick="removeItem(${index})"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          `;
+        }).join('');
+
+        summaryItemsList.innerHTML = cart.map(item => `
+          <div class="summary-row" style="font-size: 13px;">
+            <span>${item.name} (${item.size}) x ${item.quantity}</span>
+            <span style="color:#fff;">₹${(item.price * item.quantity).toLocaleString('en-IN')}</span>
+          </div>
+        `).join('');
+
+        let subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        let shipping = subtotal >= 1999 || subtotal === 0 ? 0 : 150;
+        let total = subtotal + shipping;
+
+        subtotalEl.textContent = `₹${subtotal.toLocaleString('en-IN')}`;
+        shippingEl.textContent = shipping === 0 ? 'FREE' : `₹${shipping}`;
+        totalEl.textContent = `₹${total.toLocaleString('en-IN')}`;
+      }
+
+      window.updateQty = function(index, change) {
+        let cart = getCart();
+        cart[index].quantity += change;
+        if (cart[index].quantity <= 0) cart.splice(index, 1);
+        saveCart(cart);
+        renderCartPage();
+      };
+
+      window.removeItem = function(index) {
+        let cart = getCart();
+        cart.splice(index, 1);
+        saveCart(cart);
+        renderCartPage();
+      };
+
+      function validateForm() {
+        const name = document.getElementById('cust-name').value.trim();
+        const phone = document.getElementById('cust-phone').value.trim();
+        const address = document.getElementById('cust-address').value.trim();
+        const city = document.getElementById('cust-city').value.trim();
+        const pincode = document.getElementById('cust-pincode').value.trim();
+
+        if (!name || !phone || !address || !city || !pincode) {
+          alert('Please fill in all shipping details.');
+          return null;
+        }
+        return { name, phone, address, city, pincode };
+      }
+
+      async function saveOrderToDatabase(paymentMethod, transactionId = '') {
+        let cart = getCart();
+        const cust = validateForm();
+        if (!cust || cart.length === 0) return;
+
+        let subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        let shipping = subtotal >= 1999 ? 0 : 150;
+        let totalAmount = subtotal + shipping;
+        let uniqueOrderId = 'STR-' + Math.floor(100000 + Math.random() * 900000);
+
+        if (typeof db === 'undefined') {
+          alert('Database connection error. Check supabase.js');
+          return;
+        }
+
+        const { data: orderData, error: orderError } = await db.from('orders').insert([
+          {
+            order_id: uniqueOrderId,
+            customer_name: cust.name,
+            phone: cust.phone,
+            address: cust.address,
+            city: cust.city,
+            pincode: cust.pincode,
+            total_amount: totalAmount,
+            status: 'Confirmed'
+          }
+        ]).select().single();
+
+        if (orderError) {
+          alert('Database error: ' + orderError.message);
+          return;
+        }
+
+        const itemsPayload = cart.map(item => ({
+          order_id: orderData.id,
+          product_id: item.id,
+          product_name: item.name,
+          size: item.size,
+          quantity: item.quantity,
+          price: item.price
+        }));
+
+        await db.from('order_items').insert(itemsPayload);
+
+        const receipt = {
+          orderId: uniqueOrderId,
+          name: cust.name, phone: cust.phone, address: cust.address, city: cust.city, pincode: cust.pincode,
+          items: cart,
+          total: `₹${totalAmount.toLocaleString('en-IN')}`,
+          paymentMethod: paymentMethod,
+          txnId: transactionId
+        };
+
+        sessionStorage.setItem('last_order', JSON.stringify(receipt));
+        localStorage.removeItem('strtkin_cart');
+        window.location.href = 'order-success.html';
+      }
+
+      document.getElementById('place-cod-btn').addEventListener('click', () => {
+        saveOrderToDatabase('Cash on Delivery');
+      });
+
+      document.getElementById('pay-razorpay-btn').addEventListener('click', () => {
+        const cust = validateForm();
+        let cart = getCart();
+        if (!cust || cart.length === 0) return;
+
+        let subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        let shipping = subtotal >= 1999 ? 0 : 150;
+        let totalAmountInPaise = (subtotal + shipping) * 100;
+
+        if (RAZORPAY_KEY_ID && RAZORPAY_KEY_ID !== "YOUR_RAZORPAY_TEST_KEY_ID" && typeof Razorpay !== 'undefined') {
+          const options = {
+            key: RAZORPAY_KEY_ID,
+            amount: totalAmountInPaise,
+            currency: "INR",
+            name: "STRTKIN.in",
+            description: "Streetwear Order Checkout",
+            image: "https://strtkin.in/images/logo.png",
+            handler: function (response) {
+              saveOrderToDatabase('Online (Razorpay)', response.razorpay_payment_id);
+            },
+            prefill: {
+              name: cust.name,
+              contact: cust.phone
+            },
+            theme: { color: "#080808" },
+            config: {
+              display: {
+                blocks: {
+                  banks: {
+                    name: "Payment Options",
+                    instruments: [
+                      { method: "upi" },
+                      { method: "card" },
+                      { method: "netbanking" }
+                    ]
+                  }
+                },
+                sequence: ["block.banks"],
+                preferences: { show_default_blocks: true }
+              }
+            }
+          };
+
+          const rzp = new Razorpay(options);
+          rzp.open();
+        } else {
+          const fakeTxnId = 'rzp_test_txn_' + Math.floor(10000000 + Math.random() * 90000000);
+          saveOrderToDatabase('Online (Razorpay Test Sandbox)', fakeTxnId);
+        }
+      });
+
+      renderCartPage();
+    });
+  </script>
+</body>
+</html>
